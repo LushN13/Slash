@@ -73,3 +73,33 @@ Plugins/**/Intermediate/*
 
 # Cache files for the editor to use
 DerivedDataCache/*
+# 忽略引擎生成的临时文件夹
+Binaries/
+Intermediate/
+Saved/
+DerivedDataCache/
+FileOpenOrder/
+
+# 忽略 VS 临时文件
+.vs/
+*.sln
+*.vc.db
+*.opendb
+#第三方大模型
+Content/ExternalAssets/
+
+# 忽略所有美术资产包（如 MedCastle）
+Content/MedCastle/
+Content/IdaFaber/
+# 以及其他不是你写的第三方文件夹...
+
+# 忽略虚幻 5 世界分区的外部对象（这些文件非常多，如果不打算传完整地图可以忽略）
+__ExternalObjects__/
+__ExternalActors__/
+
+# 必须忽略的缓存
+Binaries/
+Intermediate/
+Saved/
+DerivedDataCache/
+.vs/
