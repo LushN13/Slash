@@ -16,20 +16,21 @@ UCLASS()
 class SLASH_API ASlashPlayerController : public APlayerController
 {
 	GENERATED_BODY()
-private:
-	UPROPERTY(EditAnywhere, Category = Input, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UInputMappingContext> SlashContext;
-	UPROPERTY(EditAnywhere, Category = Input, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UInputAction> MoveAction;
+public:
+	ASlashPlayerController();
 
 	void Move(const FInputActionValue& InputActionValue);
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
 
+private:
+	UPROPERTY(EditAnywhere, Category = Input)
+	TObjectPtr<UInputMappingContext> SlashContext;
+	UPROPERTY(EditAnywhere, Category = Input)
+	TObjectPtr<UInputAction> MoveAction;
 
-public:
-	ASlashPlayerController();
 
 
 };
