@@ -91,6 +91,7 @@ Content/ExternalAssets/
 # 忽略所有美术资产包（如 MedCastle）
 Content/MedCastle/
 Content/IdaFaber/
+Content/Maps/
 # 以及其他不是你写的第三方文件夹...
 
 # 忽略虚幻 5 世界分区的外部对象（这些文件非常多，如果不打算传完整地图可以忽略）
