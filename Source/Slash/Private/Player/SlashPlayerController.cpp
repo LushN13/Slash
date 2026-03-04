@@ -4,7 +4,7 @@
 #include "Player/SlashPlayerController.h"
 #include "EnhancedInputSubsystems.h" // 添加此头文件以定义 UEnhancedInputLocalPlayerSubsystem
 #include "EnhancedInputComponent.h"
-
+#include "GameFramework/Character.h"
 
 ASlashPlayerController::ASlashPlayerController()
 {
@@ -23,7 +23,11 @@ void ASlashPlayerController::BeginPlay()
 	check(Subsystem);
 
 	//添加输入情景
-	Subsystem->AddMappingContext(SlashContext, 0);
+	if (Subsystem)
+	{
+     Subsystem->AddMappingContext(SlashContext, 0);
+	}
+	
 
 }
 
@@ -35,6 +39,8 @@ void ASlashPlayerController::SetupInputComponent()
 	UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent);
 
 	EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ASlashPlayerController::Move);
+	EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ASlashPlayerController::Look);
+	EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ASlashPlayerController::Jump);
 }
 
 
@@ -55,6 +61,23 @@ void ASlashPlayerController::Move(const FInputActionValue& InputActionValue)
 	}
 }
 
+void ASlashPlayerController::Look(const FInputActionValue& InputActionValue)
+{
+	const FVector2D InputAxisVector = InputActionValue.Get<FVector2D>();
+
+	// PlayerController 本身就有处理旋转的函数，直接调用即可
+	AddYawInput(InputAxisVector.X);
+	AddPitchInput(InputAxisVector.Y);
+}
+
+void ASlashPlayerController::Jump()
+{
+	// 获取当前控制的 Pawn 并转换为 ACharacter，因为 APawn 没有 Jump 功能
+	if (ACharacter* ControlledCharacter = Cast<ACharacter>(GetPawn()))
+	{
+		ControlledCharacter->Jump();
+	}
+}
 
 
 

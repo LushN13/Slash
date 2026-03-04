@@ -20,6 +20,8 @@ public:
 	ASlashPlayerController();
 
 	void Move(const FInputActionValue& InputActionValue);
+	void Look(const FInputActionValue& InputActionValue);
+	void Jump();
 
 protected:
 	virtual void BeginPlay() override;
@@ -30,6 +32,10 @@ private:
 	TObjectPtr<UInputMappingContext> SlashContext;
 	UPROPERTY(EditAnywhere, Category = Input)
 	TObjectPtr<UInputAction> MoveAction;
+	UPROPERTY(EditAnywhere, Category = Input)
+	TObjectPtr<UInputAction> LookAction;
+	UPROPERTY(EditAnywhere, Category = Input)
+	TObjectPtr<UInputAction> JumpAction;
 
 
 
