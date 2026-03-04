@@ -5,6 +5,7 @@
 #include "EnhancedInputSubsystems.h" // 添加此头文件以定义 UEnhancedInputLocalPlayerSubsystem
 #include "EnhancedInputComponent.h"
 
+
 ASlashPlayerController::ASlashPlayerController()
 {
 	//服务器向客户端同步数据
@@ -43,7 +44,18 @@ void ASlashPlayerController::Move(const FInputActionValue& InputActionValue)
 	
 	//得到Y轴的旋转
 	const FRotator YawRotation(0.f, GetControlRotation().Yaw, 0.f);
+
+	const FVector ForwardDir = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+	const FVector RightDir = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
+	if (APawn* ControllerPawn = GetPawn())
+	{
+		ControllerPawn->AddMovementInput(ForwardDir, InputAxisVector.Y);
+		ControllerPawn->AddMovementInput(RightDir, InputAxisVector.X);
+	}
 }
+
+
 
 
 

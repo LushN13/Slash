@@ -6,6 +6,9 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Components/InputComponent.h"
+#include "EnhancedInputComponent.h"
+#include "EnhancedInputSubsystems.h"
 
 
 // Sets default values
@@ -38,6 +41,17 @@ ABird::ABird()
 void ABird::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// 获取 PlayerController
+	if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
+	{
+		// 获取 EnhancedInputLocalPlayerSubsystem
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+		{
+			// 添加映射上下文，优先级设为 0
+			Subsystem->AddMappingContext(SlashContext, 0);
+		}
+	}
 	
 }
 
@@ -53,6 +67,48 @@ void ABird::Tick(float DeltaTime)
 void ABird::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	
 
+	// 强制转换为增强输入组件
+	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
+	{
+		// 绑定移动 (Triggered 表示按下期间每帧触发)
+		EnhancedInputComponent->BindAction(MovementAction, ETriggerEvent::Triggered, this, &ABird::Move);
+
+		// 绑定视角
+		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ABird::Look);
+	}
 }
 
+void ABird::Move(const FInputActionValue& Value)
+{
+	// 1. 获取输入的二维向量 (X=左/右, Y=前/后)
+	const FVector2D MovementVector = Value.Get<FVector2D>();
+
+	if (Controller != nullptr)
+	{
+		// 2. 获取控制器的旋转（摄像机朝向）
+		const FRotator Rotation = Controller->GetControlRotation();
+		const FRotator YawRotation(0.f, Rotation.Yaw, 0.f); // 只保留水平方向的旋转
+
+		// 3. 计算前方和右方
+		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
+		// 4. 应用移动
+		AddMovementInput(ForwardDirection, MovementVector.Y); // 前后
+		AddMovementInput(RightDirection, MovementVector.X);   // 左右
+	}
+}
+
+void ABird::Look(const FInputActionValue& Value)
+{
+	const FVector2D LookAxisVector = Value.Get<FVector2D>();
+
+	if (Controller != nullptr)
+	{
+		// 添加鼠标/手柄输入到控制器的 Pitch (上下) 和 Yaw (左右)
+		AddControllerYawInput(LookAxisVector.X);
+		AddControllerPitchInput(LookAxisVector.Y);
+	}
+}
